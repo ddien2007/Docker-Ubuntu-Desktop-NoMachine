@@ -42,7 +42,7 @@ docker run --rm -d --network host --privileged --name nomachine-xfce4 --cap-add=
     -e PASSWORD=123456 -e USER=user \
     #-v $HOME:/home/$USER \
     thuonghai2711/nomachine-ubuntu-desktop:xfce4
-clear
+
 echo "NoMachine: https://www.nomachine.com/download"
 echo Done! NoMachine Information:
 echo IP Address:
