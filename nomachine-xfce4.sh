@@ -1,6 +1,12 @@
 #!/bin/bash
 USER=user
 PASSWORD=123456
+TMPTOKEN="ngrok_token"
+
+if [["/home/$USER" == $HOME]]; then
+    echo "mount path must not be equal to the HOME path. Try another USER variable."
+    exit -1
+fi
 
 wget -O ng.sh https://github.com/kmille36/Docker-Ubuntu-Desktop-NoMachine/raw/main/ngrok.sh > /dev/null 2>&1
 chmod +x ng.sh
@@ -20,7 +26,13 @@ function goto
 : ngrok
 clear
 echo "Go to: https://dashboard.ngrok.com/get-started/your-authtoken"
-read -p "Paste Ngrok Authtoken: " CRP
+if [ -f $TMPTOKEN ]; then
+    echo "using tmptoken"
+    CRP=$(head -n 1 $TMPTOKEN)
+else
+    read -p "Paste Ngrok Authtoken: " CRP
+    echo $CRP > $TMPTOKEN
+fi
 ./ngrok authtoken $CRP 
 
 clear
@@ -40,7 +52,7 @@ read -p "choose ngrok region: " CRP
 sleep 1
 if curl --silent --show-error http://127.0.0.1:4040/api/tunnels  > /dev/null 2>&1; then echo OK; else echo "Ngrok Error! Please try again!" && sleep 1 && goto ngrok; fi
 docker run --rm -d --network host --privileged --name nomachine-xfce4 --cap-add=SYS_PTRACE --shm-size=1g \
-    -e PASSWORD=123456 -e USER=user \
+    -e PASSWORD=$PASSWORD -e USER=$USER \
     -v $HOME:$HOME \
     thuonghai2711/nomachine-ubuntu-desktop:xfce4
 
